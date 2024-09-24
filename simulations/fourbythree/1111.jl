@@ -1,6 +1,7 @@
 using DrWatson
 @quickactivate "MECMrankdetermination"
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
+using Plots
 
 Random.seed!(20240925)
 
@@ -45,6 +46,19 @@ for i in 1:1000
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-obs = 1000
+smallobs = 100
+medobs = 500
 burnin = 100
+
+smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; burnin=burnin)
+smalldata = smallmecm.mardata
+smallloglike = smallmecm.ll
+
+medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; burnin=burnin)
+meddata = medmecm.mardata
+medloglike = medmecm.ll
+
+aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiters, ϵ)
+aicmed, bicmed, hqcmed = selectmecm(meddata; p, maxiters, ϵ)
+
 
