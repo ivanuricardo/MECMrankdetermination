@@ -2,7 +2,7 @@
 
 julia_version = "1.10.5"
 manifest_format = "2.0"
-project_hash = "1d93498e9029d104bec90c661c8bd6aec1e6c0e6"
+project_hash = "eda9d23490956edf79c6d9fcd89f7260855c4eb7"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -120,7 +120,7 @@ version = "1.0.2"
 
 [[deps.CommonFeatures]]
 deps = ["Combinatorics", "Distributions", "LinearAlgebra", "Parameters", "ProgressBars", "Random", "ReverseDiff", "Statistics", "TensorToolbox", "Zygote"]
-git-tree-sha1 = "5caecb5f8826a814bde9a4cddc677764d2ea44bc"
+git-tree-sha1 = "b3607fa63d0b0b2121206c8916f65f42533b4b67"
 repo-rev = "main"
 repo-url = "https://github.com/ivanuricardo/CommonFeatures.jl"
 uuid = "d562da72-20cd-4cfa-9b52-1d2260ac0556"
