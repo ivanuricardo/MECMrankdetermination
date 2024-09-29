@@ -7,7 +7,7 @@ Random.seed!(20240925)
 
 sims = 50
 n = [4, 3]
-ranks = [1, 1]
+ranks = [2, 2]
 
 maxiters = 50
 ϵ = 1e-02
@@ -65,7 +65,7 @@ for s in ProgressBar(1:sims)
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; snr=0.7)
     # df = randn(size(medmecm.data))
 
-    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=100, ϵ=ϵ)
+    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=1000, ϵ=ϵ)
     firstmedic[1, s] = aicmed[1]
     firstmedic[2, s] = bicmed[1]
     firstmedic[3, s] = hqcmed[1]
@@ -89,8 +89,8 @@ startidx = 1
 plot(results.llist[startidx:findlast(!isnan, results.llist)])
 plot(results.fullgrads)
 
-results.U2 / results.U2[1]
-trueU2 / trueU2[1]
+results.U1 / results.U1[1]
+trueU1 / trueU1
 
 svdvals(results.U1)
 svdvals(results.U2)
