@@ -1,13 +1,13 @@
 using DrWatson
 @quickactivate "MECMrankdetermination"
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
-using Plots
+using PlotlyJS
 
 Random.seed!(20240925)
 
 sims = 50
 n = [4, 3]
-ranks = [2, 2]
+ranks = [1, 1]
 
 maxiters = 50
 ϵ = 1e-02
@@ -44,10 +44,20 @@ for i in 1:1000
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
+obs = 500
+burnin = 100
+genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
+results = mecm(genmecm.data, [1, 1]; p=0, maxiter=4000, etaS=1e-03, ϵ=1e-02)
+results.llist[1:findlast(!isnan, results.llist)]
+startidx = 1
+PlotlyJS.plot(results.llist[startidx:findlast(!isnan, results.llist)])
+plot(results.fullgrads)
+
+results.U1 / results.U1[1]
+trueU1 / trueU1[1]
+
 # smallobs = 100
 medobs = 500
-burnin = 100
-
 for s in ProgressBar(1:sims)
     # smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; burnin=burnin)
     # smalldata = smallmecm.mardata
@@ -63,9 +73,7 @@ for s in ProgressBar(1:sims)
     # secondsmallic[3, s] = hqcsmall[2]
 
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; snr=0.7)
-    # df = randn(size(medmecm.data))
-
-    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=300, ϵ=ϵ)
+    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=300, etaS=1e-03, ϵ=ϵ)
     firstmedic[1, s] = aicmed[1]
     firstmedic[2, s] = bicmed[1]
     firstmedic[3, s] = hqcmed[1]
@@ -81,16 +89,6 @@ end
 mean(firstmedic, dims=2)
 mean(secondmedic, dims=2)
 
-obs = 500
-genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
-results = mecm(genmecm.data, [1, 1]; p=0, maxiter=500, etaS=1e-05, ϵ=1e-02)
-results.llist[1:findlast(!isnan, results.llist)]
-startidx = 1
-plot(results.llist[startidx:findlast(!isnan, results.llist)])
-plot(results.fullgrads)
-
-results.U1 / results.U1[1]
-trueU1 / trueU1
 
 svdvals(results.U1)
 svdvals(results.U2)
