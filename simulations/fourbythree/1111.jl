@@ -3,11 +3,11 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots
 
-Random.seed!(20240925)
+Random.seed!(20240928)
 
-sims = 50
+sims = 10
 n = [4, 3]
-ranks = [1, 1]
+ranks = [1, 3]
 
 maxiters = 50
 ϵ = 1e-02
@@ -33,7 +33,7 @@ for i in 1:1000
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
-    if maximum(i1cond) < 0.9
+    if 0.7 < maximum(i1cond) < 0.9
         trueU1 = U1
         trueU2 = U2
         trueU3 = U3
@@ -47,14 +47,24 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 obs = 500
 burnin = 100
 genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
-results = mecm(genmecm.data, [1, 1]; p=0, maxiter=1000, etaS=1e-04, ϵ=1e-02)
+estranks = [1, 3]
+results = mecm(genmecm.data, estranks; p=0, maxiter=1000, etaS=1e-04, ϵ=1e-02)
 results.llist[1:findlast(!isnan, results.llist)]
 startidx = 1
 plot(results.llist[startidx:findlast(!isnan, results.llist)])
 plot(results.fullgrads)
 
-results.U1 / results.U1[1]
-trueU1 / trueU1[1]
+results.U3 / results.U3[1]
+trueU3 / trueU3[1]
+
+fac1 = fill(NaN, estranks[1], estranks[2], obs)
+for i in 1:obs
+    fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
+end
+plot(tenmat(fac1, row=[1, 2])')
+plot(genmecm.data[:, 1, :]')
+
+################################################################################
 
 # smallobs = 100
 medobs = 500
@@ -73,7 +83,7 @@ for s in ProgressBar(1:sims)
     # secondsmallic[3, s] = hqcsmall[2]
 
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; snr=0.7)
-    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=500, etaS=1e-05, ϵ=ϵ)
+    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=500, etaS=1e-04, ϵ=ϵ)
     firstmedic[1, s] = aicmed[1]
     firstmedic[2, s] = bicmed[1]
     firstmedic[3, s] = hqcmed[1]
@@ -88,19 +98,3 @@ end
 
 mean(firstmedic, dims=2)
 mean(secondmedic, dims=2)
-
-
-svdvals(results.U1)
-svdvals(results.U2)
-svdvals(results.U3)
-svdvals(results.U4)
-
-fac1 = fill(NaN, 1, 3, obs)
-for i in 1:obs
-    fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i]
-end
-plot(tenmat(fac1, row=[1, 2])')
-
-
-
-
