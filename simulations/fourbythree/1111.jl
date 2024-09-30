@@ -1,7 +1,7 @@
 using DrWatson
 @quickactivate "MECMrankdetermination"
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
-using PlotlyJS
+using Plots
 
 Random.seed!(20240925)
 
@@ -47,10 +47,10 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 obs = 500
 burnin = 100
 genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
-results = mecm(genmecm.data, [1, 1]; p=0, maxiter=4000, etaS=1e-03, ϵ=1e-02)
+results = mecm(genmecm.data, [1, 1]; p=0, maxiter=1000, etaS=1e-04, ϵ=1e-02)
 results.llist[1:findlast(!isnan, results.llist)]
 startidx = 1
-PlotlyJS.plot(results.llist[startidx:findlast(!isnan, results.llist)])
+plot(results.llist[startidx:findlast(!isnan, results.llist)])
 plot(results.fullgrads)
 
 results.U1 / results.U1[1]
@@ -73,7 +73,7 @@ for s in ProgressBar(1:sims)
     # secondsmallic[3, s] = hqcsmall[2]
 
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; snr=0.7)
-    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=300, etaS=1e-03, ϵ=ϵ)
+    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=500, etaS=1e-05, ϵ=ϵ)
     firstmedic[1, s] = aicmed[1]
     firstmedic[2, s] = bicmed[1]
     firstmedic[3, s] = hqcmed[1]
