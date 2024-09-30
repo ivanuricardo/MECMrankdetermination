@@ -47,7 +47,7 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 obs = 500
 burnin = 100
 genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
-estranks = [1, 3]
+estranks = [1, 1]
 results = mecm(genmecm.data, estranks; p=0, maxiter=1000, etaS=1e-04, ϵ=1e-02)
 results.llist[1:findlast(!isnan, results.llist)]
 startidx = 1
