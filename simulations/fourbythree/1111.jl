@@ -7,11 +7,12 @@ Random.seed!(20240928)
 
 sims = 10
 n = [4, 3]
-ranks = [1, 3]
+ranks = [1, 1]
 
-maxiters = 50
+maxiters = 100
 ϵ = 1e-02
 p = 0
+burnin = 100
 
 firstsmallic = fill(NaN, 3, sims)
 firstmedic = fill(NaN, 3, sims)
@@ -44,36 +45,39 @@ for i in 1:1000
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-obs = 500
-burnin = 100
-genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
-estranks = [1, 1]
-results = mecm(genmecm.data, estranks; p=0, maxiter=1000, etaS=1e-04, ϵ=1e-02)
-results.llist[1:findlast(!isnan, results.llist)]
-startidx = 1
-plot(results.llist[startidx:findlast(!isnan, results.llist)])
-plot(results.fullgrads)
-
-results.U3 / results.U3[1]
-trueU3 / trueU3[1]
-
-fac1 = fill(NaN, estranks[1], estranks[2], obs)
-for i in 1:obs
-    fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
-end
-plot(tenmat(fac1, row=[1, 2])')
-plot(genmecm.data[:, 1, :]')
+# obs = 500
+# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs; burnin=burnin)
+# estranks = [1, 3]
+# results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-03, ϵ=1e-02)
+# results.llist[1:findlast(!isnan, results.llist)]
+# startidx = 1
+# plot(results.llist[startidx:findlast(!isnan, results.llist)])
+# plot(results.fullgrads)
+#
+# results.U3 / results.U3[1]
+# trueU3 / trueU3[1]
+#
+# fac1 = fill(NaN, estranks[1], estranks[2], obs)
+# for i in 1:obs
+#     fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
+# end
+# plot(tenmat(fac1, row=[1, 2])')
+# plot(genmecm.flatdata')
 
 ################################################################################
 
-# smallobs = 100
+smallobs = 100
 medobs = 500
-for s in ProgressBar(1:sims)
-    # smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; burnin=burnin)
-    # smalldata = smallmecm.mardata
-    # smallloglike = smallmecm.ll
+smallaic = fill(NaN, 2, sims)
+smallbic = fill(NaN, 2, sims)
+smallhqc = fill(NaN, 2, sims)
+medaic = fill(NaN, 2, sims)
+medbic = fill(NaN, 2, sims)
+medhqc = fill(NaN, 2, sims)
 
-    # aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiters, ϵ)
+for s in ProgressBar(1:sims)
+    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; burnin=burnin)
+    aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
     # firstsmallic[1, s] = aicsmall[1]
     # firstsmallic[2, s] = bicsmall[1]
     # firstsmallic[3, s] = hqcsmall[1]
@@ -83,18 +87,50 @@ for s in ProgressBar(1:sims)
     # secondsmallic[3, s] = hqcsmall[2]
 
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; snr=0.7)
-    aicmed, bicmed, hqcmed, ictable = selectmecm(medmecm.data; p=p, maxiters=500, etaS=1e-04, ϵ=ϵ)
-    firstmedic[1, s] = aicmed[1]
-    firstmedic[2, s] = bicmed[1]
-    firstmedic[3, s] = hqcmed[1]
+    aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiters, ϵ=ϵ)
 
-    secondmedic[1, s] = aicmed[2]
-    secondmedic[2, s] = bicmed[2]
-    secondmedic[3, s] = hqcmed[2]
+    smallaic[:, s] = aicsmall
+    smallbic[:, s] = bicsmall
+    smallhqc[:, s] = hqcsmall
+
+    medaic[:, s] = aicmed
+    medbic[:, s] = bicmed
+    medhqc[:, s] = hqcmed
+
+    # firstmedic[1, s] = aicmed[1]
+    # firstmedic[2, s] = bicmed[1]
+    # firstmedic[3, s] = hqcmed[1]
+    #
+    # secondmedic[1, s] = aicmed[2]
+    # secondmedic[2, s] = bicmed[2]
+    # secondmedic[3, s] = hqcmed[2]
 end
 
-# xx = tenmat(medmecm.data, row=[1, 2]) * tenmat(medmecm.data, row=[1, 2])'
-# plot(reverse(abs.(eigvals(xx ./ medobs))))
+smallaicstats = simstats(smallaic, ranks, sims)
+smallbicstats = simstats(smallbic, ranks, sims)
 
-mean(firstmedic, dims=2)
-mean(secondmedic, dims=2)
+medaicstats = simstats(medaic, ranks, sims)
+medbicstats = simstats(medbic, ranks, sims)
+
+avgrank = hcat(smallaicstats.avgrank, smallbicstats.avgrank,
+    medaicstats.avgrank, medbicstats.avgrank)
+
+stdrank = hcat(smallaicstats.stdrank, smallbicstats.stdrank,
+    medaicstats.stdrank, medbicstats.stdrank)
+
+lowerrank = hcat(smallaicstats.freqlow, smallbicstats.freqlow,
+    medaicstats.freqlow, medbicstats.freqlow)
+
+correctrank = hcat(smallaicstats.freqcorrect, smallbicstats.freqcorrect,
+    medaicstats.freqcorrect, medbicstats.freqcorrect)
+
+highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
+    medaicstats.freqhigh, medbicstats.freqhigh)
+
+results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
+
+
+
+
+
+
