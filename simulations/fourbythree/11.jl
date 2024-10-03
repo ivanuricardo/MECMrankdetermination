@@ -25,10 +25,8 @@ trueU3 = fill(NaN, n[1], ranks[1])
 trueU4 = fill(NaN, n[2], ranks[2])
 trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
-ct = 0
 
 for i in 1:1000
-    ct += 1
 
     U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
 
