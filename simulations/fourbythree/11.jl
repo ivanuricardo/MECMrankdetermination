@@ -27,7 +27,7 @@ trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
 ct = 0
 
-Threads.@threads for i in 1:1000
+for i in 1:1000
     ct += 1
 
     U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
@@ -78,7 +78,7 @@ medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
 folder = "savedsims"
 
-for s in ProgressBar(1:sims)
+Threads.@threads for s in ProgressBar(1:sims)
     smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs)
     aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
     smallaic[:, s] = aicsmall
