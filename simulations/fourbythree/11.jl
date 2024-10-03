@@ -33,10 +33,10 @@ for i in 1:1000
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
     if maximum(i1cond) < 0.9
-        trueU1 = U1
-        trueU2 = U2
-        trueU3 = U3
-        trueU4 = U4
+        trueU1 .= U1
+        trueU2 .= U2
+        trueU3 .= U3
+        trueU4 .= U4
         println("I(1) condition satisfied")
         break
     end
