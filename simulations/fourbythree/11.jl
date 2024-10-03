@@ -5,7 +5,7 @@ using Plots, DelimitedFiles, Latexify
 
 Random.seed!(20241001)
 
-sims = 10
+sims = 1000
 n = [4, 3]
 ranks = [1, 1]
 
