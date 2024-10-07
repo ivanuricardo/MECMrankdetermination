@@ -27,9 +27,9 @@ trueU4 = fill(NaN, n[2], ranks[2])
 trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
 
-for i in 1:1000
+for i in 1:1e8
 
-    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
+    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=true)
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
@@ -38,6 +38,8 @@ for i in 1:1000
         trueU2 .= U2
         trueU3 .= U3
         trueU4 .= U4
+        trueϕ1 .= ϕ1
+        trueϕ2 .= ϕ2
         println("I(1) condition satisfied")
         break
     end
