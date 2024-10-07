@@ -7,12 +7,13 @@ Random.seed!(20241001)
 
 sims = 1000
 n = [4, 3]
-ranks = [1, 1]
+ranks = [4, 3]
 
 maxiters = 100
 ϵ = 1e-01
 p = 0
 burnin = 100
+matrixnorm = false
 
 firstsmallic = fill(NaN, 3, sims)
 firstmedic = fill(NaN, 3, sims)
@@ -26,7 +27,7 @@ trueU4 = fill(NaN, n[2], ranks[2])
 trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
 
-for i in 1:1000
+for i in 1:1e8
 
     U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
 
@@ -43,9 +44,9 @@ for i in 1:1000
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-# obs = 500
-# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
-# plot(genmecm.flatdata')
+obs = 500
+genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
+plot(genmecm.flatdata')
 
 # estranks = [1, 1]
 # results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
@@ -77,13 +78,13 @@ medhqc = fill(NaN, 2, sims)
 folder = "savedsims"
 
 Threads.@threads for s in ProgressBar(1:sims)
-    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs)
+    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
     aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
-    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
+    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
     aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiters, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed

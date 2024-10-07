@@ -7,12 +7,13 @@ Random.seed!(20241001)
 
 sims = 1000
 n = [4, 3]
-ranks = [1, 1]
+ranks = [4, 1]
 
 maxiters = 100
 ϵ = 1e-01
 p = 0
 burnin = 100
+matrixnorm = true
 
 firstsmallic = fill(NaN, 3, sims)
 firstmedic = fill(NaN, 3, sims)
@@ -77,13 +78,13 @@ medhqc = fill(NaN, 2, sims)
 folder = "savedsims"
 
 Threads.@threads for s in ProgressBar(1:sims)
-    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs)
+    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
     aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
-    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
+    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
     aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiters, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
