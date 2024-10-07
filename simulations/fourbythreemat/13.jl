@@ -44,26 +44,26 @@ for i in 1:1000
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-obs = 500
-genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
-plot(genmecm.flatdata')
-
-estranks = [1, 3]
-results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
-results.llist[1:findlast(!isnan, results.llist)]
-startidx = 1
-plot(results.llist[startidx:findlast(!isnan, results.llist)])
-plot(results.fullgrads)
-
-results.U3 / results.U3[1]
-trueU3 / trueU3[1]
-
-fac1 = fill(NaN, estranks[1], estranks[2], obs)
-for i in 1:obs
-    fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
-end
-plot(tenmat(fac1, row=[1, 2])')
-plot(fac1[1, 1, :])
+# obs = 500
+# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
+# plot(genmecm.flatdata')
+#
+# estranks = [1, 3]
+# results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
+# results.llist[1:findlast(!isnan, results.llist)]
+# startidx = 1
+# plot(results.llist[startidx:findlast(!isnan, results.llist)])
+# plot(results.fullgrads)
+#
+# results.U3 / results.U3[1]
+# trueU3 / trueU3[1]
+#
+# fac1 = fill(NaN, estranks[1], estranks[2], obs)
+# for i in 1:obs
+#     fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
+# end
+# plot(tenmat(fac1, row=[1, 2])')
+# plot(fac1[1, 1, :])
 
 ################################################################################
 

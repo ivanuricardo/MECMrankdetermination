@@ -68,7 +68,7 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 ################################################################################
 
 smallobs = 100
-medobs = 1000
+medobs = 500
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)

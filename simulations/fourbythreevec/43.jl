@@ -44,9 +44,9 @@ for i in 1:1e8
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-obs = 500
-genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
-plot(genmecm.flatdata')
+# obs = 500
+# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
+# plot(genmecm.flatdata')
 
 # estranks = [1, 1]
 # results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
