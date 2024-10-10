@@ -10,7 +10,7 @@ n = [4, 3]
 ranks = [1, 3]
 
 maxiter = 300
-ϵ = 1e-01
+ϵ = 1e-03
 p = 0
 burnin = 100
 matrixnorm = false

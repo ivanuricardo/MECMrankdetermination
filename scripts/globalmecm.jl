@@ -4,10 +4,10 @@ using TensorToolbox, CommonFeatures, LinearAlgebra, Statistics
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 
-maxiter = 20000
+maxiter = 500
 ϵ = 1e-03
 p = 1
-etaS = 9e-09
+etaS = 1e-08
 
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
 aic = icranks.aic[1:4]
@@ -21,7 +21,7 @@ hqcp = icranks.hqc[end]
 @info "HQ selects ranks $hqc with $hqcp lags."
 
 using Plots, Zygote
-ranks = [1, 1]
+ranks = [1, 2]
 
 res = mecm(matdata, ranks; p, maxiter, etaS, ϵ)
 filter(!isnan, res.llist)
