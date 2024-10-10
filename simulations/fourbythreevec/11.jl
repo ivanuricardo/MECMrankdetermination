@@ -5,12 +5,12 @@ using Plots, DelimitedFiles, Latexify
 
 Random.seed!(20241001)
 
-sims = 10
+sims = 100
 n = [4, 3]
 ranks = [1, 1]
 
-maxiter = 100
-ϵ = 1e-01
+maxiter = 300
+ϵ = 1e-03
 p = 0
 burnin = 100
 matrixnorm = false
@@ -68,7 +68,7 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 ################################################################################
 
 smallobs = 100
-medobs = 500
+medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)

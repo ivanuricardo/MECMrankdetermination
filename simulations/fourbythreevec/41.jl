@@ -9,7 +9,7 @@ sims = 1000
 n = [4, 3]
 ranks = [4, 1]
 
-maxiters = 100
+maxiter = 300
 ϵ = 1e-01
 p = 0
 burnin = 100
@@ -68,7 +68,7 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 ################################################################################
 
 smallobs = 100
-medobs = 500
+medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)
@@ -79,13 +79,13 @@ folder = "savedsims"
 
 Threads.@threads for s in ProgressBar(1:sims)
     smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
-    aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
+    aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
     medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
-    aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiters, ϵ)
+    aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiter, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
