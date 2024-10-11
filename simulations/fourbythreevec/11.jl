@@ -9,7 +9,7 @@ sims = 1000
 n = [4, 3]
 ranks = [1, 1]
 
-maxiter = 300
+maxiter = 100
 ϵ = 1e-02
 p = 0
 burnin = 100
