@@ -7,7 +7,7 @@ matdata = load(datadir("globaldata.jld2"), "matdata");
 maxiter = 100
 ϵ = 1e-02
 p = 1
-etaS = 1e-08
+etaS = 5e-09
 
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
 aic = icranks.aic[1:4]
@@ -23,7 +23,7 @@ hqcp = icranks.hqc[end]
 using Plots, Zygote
 ranks = [1, 1]
 
-res = mecm(matdata, ranks; p, maxiter=10000, etaS=1e-08, ϵ=1e-03)
+res = mecm(matdata, ranks; p, maxiter, etaS=5e-09, ϵ=1e-02)
 filter(!isnan, res.llist)
 plot(filter(!isnan, res.llist))
 
