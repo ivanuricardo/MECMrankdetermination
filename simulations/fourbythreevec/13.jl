@@ -9,7 +9,7 @@ sims = 1000
 n = [4, 3]
 ranks = [1, 3]
 
-maxiter = 300
+maxiter = 100
 ϵ = 1e-02
 p = 0
 burnin = 100
@@ -27,7 +27,7 @@ trueU4 = fill(NaN, n[2], ranks[2])
 trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
 
-for i in 1:1000
+for i in 1:1e08
 
     U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
 

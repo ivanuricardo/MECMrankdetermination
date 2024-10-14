@@ -4,8 +4,8 @@ using TensorToolbox, CommonFeatures, LinearAlgebra, Statistics
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 
-maxiter = 500
-ϵ = 1e-03
+maxiter = 100
+ϵ = 1e-02
 p = 1
 etaS = 1e-08
 
@@ -21,17 +21,20 @@ hqcp = icranks.hqc[end]
 @info "HQ selects ranks $hqc with $hqcp lags."
 
 using Plots, Zygote
-ranks = [1, 2]
+ranks = [1, 1]
 
-res = mecm(matdata, ranks; p, maxiter, etaS, ϵ)
+res = mecm(matdata, ranks; p, maxiter=10000, etaS=1e-08, ϵ=1e-03)
 filter(!isnan, res.llist)
 plot(filter(!isnan, res.llist))
-plot(res.llist)
 
 Σ1 = res.Σ1
 Σ2 = res.Σ2
 
 kron(Σ2, Σ1)
+
+U1 = res.U1
+U2 = res.U2
+kron(U2, U1)
 
 U4 = res.U4
 U3 = res.U3
@@ -42,7 +45,7 @@ for i in 1:obs
     facmat[:, :, i] .= U3' * matdata[:, :, i] * U4
 end
 plot(tenmat(facmat, row=[1, 2])')
-plot(facmat[1, :, :]')
+plot(facmat[2, :, :]')
 plot(facmat[1, 2, :])
 
 plot(tenmat(matdata, row=[1, 2])')
