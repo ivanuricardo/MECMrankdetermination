@@ -10,20 +10,17 @@ p = 1
 etaS = 5e-09
 
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
-aic = icranks.aic[1:4]
-aicp = icranks.aic[end]
-bic = icranks.bic[1:4]
-bicp = icranks.bic[end]
-hqc = icranks.hqc[1:4]
-hqcp = icranks.hqc[end]
-@info "AIC selects ranks $aic with $aicp lags."
-@info "BIC selects ranks $bic with $bicp lags."
-@info "HQ selects ranks $hqc with $hqcp lags."
+aic = icranks.aicsel
+bic = icranks.bicsel
+hqc = icranks.hqcsel
+@info "AIC selects ranks $aic"
+@info "BIC selects ranks $bic"
+@info "HQC selects ranks $hqc"
 
 using Plots, Zygote
 ranks = [1, 1]
 
-res = mecm(matdata, ranks; p, maxiter, etaS=5e-09, ϵ=1e-02)
+res = mecm(matdata, ranks; p, maxiter=10000, etaS=1e-08, ϵ=1e-02)
 filter(!isnan, res.llist)
 plot(filter(!isnan, res.llist))
 
@@ -45,8 +42,4 @@ for i in 1:obs
     facmat[:, :, i] .= U3' * matdata[:, :, i] * U4
 end
 plot(tenmat(facmat, row=[1, 2])')
-plot(facmat[2, :, :]')
-plot(facmat[1, 2, :])
 
-plot(tenmat(matdata, row=[1, 2])')
-plot(matdata[3, :, :]')
