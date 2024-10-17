@@ -9,7 +9,7 @@ sims = 1000
 n = [4, 3]
 ranks = [4, 3]
 
-maxiter = 100
+maxiter = 25
 ϵ = 1e-02
 p = 0
 burnin = 100
@@ -90,17 +90,17 @@ Threads.@threads for s in ProgressBar(1:sims)
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
 
-    smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
-    smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
-    medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
-    medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
-    if !isdir(folder)
-        mkdir(folder)
-    end
-    writedlm(smallaicpath, smallaic, ',')
-    writedlm(smallbicpath, smallbic, ',')
-    writedlm(medaicpath, medaic, ',')
-    writedlm(medbicpath, medbic, ',')
+    # smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
+    # smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
+    # medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
+    # medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
+    # if !isdir(folder)
+    #     mkdir(folder)
+    # end
+    # writedlm(smallaicpath, smallaic, ',')
+    # writedlm(smallbicpath, smallbic, ',')
+    # writedlm(medaicpath, medaic, ',')
+    # writedlm(medbicpath, medbic, ',')
     GC.gc()
 end
 

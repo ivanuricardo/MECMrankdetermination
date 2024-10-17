@@ -9,7 +9,7 @@ sims = 1000
 n = [4, 3]
 ranks = [1, 3]
 
-maxiter = 100
+maxiter = 25
 ϵ = 1e-02
 p = 0
 burnin = 100
@@ -77,7 +77,7 @@ medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
 folder = "savedsims"
 
-Threads.@threads for s in ProgressBar(1:sims)
+for s in ProgressBar(1:sims)
     smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
     aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
@@ -90,17 +90,21 @@ Threads.@threads for s in ProgressBar(1:sims)
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
 
-    smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
-    smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
-    medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
-    medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
-    if !isdir(folder)
-        mkdir(folder)
-    end
-    writedlm(smallaicpath, smallaic, ',')
-    writedlm(smallbicpath, smallbic, ',')
-    writedlm(medaicpath, medaic, ',')
-    writedlm(medbicpath, medbic, ',')
+    # smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
+    # smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
+    # smallhqcpath = joinpath(pwd(), folder, "smallhqc$s.csv")
+    # medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
+    # medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
+    # medhqcpath = joinpath(pwd(), folder, "medhqc$s.csv")
+    # if !isdir(folder)
+    #     mkdir(folder)
+    # end
+    # writedlm(smallaicpath, smallaic, ',')
+    # writedlm(smallbicpath, smallbic, ',')
+    # writedlm(smallhqcpath, smallhqc, ',')
+    # writedlm(medaicpath, medaic, ',')
+    # writedlm(medbicpath, medbic, ',')
+    # writedlm(medhqcpath, medhqc, ',')
     GC.gc()
 end
 

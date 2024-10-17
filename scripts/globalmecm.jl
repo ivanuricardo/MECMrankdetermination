@@ -4,10 +4,10 @@ using TensorToolbox, CommonFeatures, LinearAlgebra, Statistics
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 
-maxiter = 100
+maxiter = 25
 ϵ = 1e-02
 p = 1
-etaS = 5e-09
+etaS = 3e-08
 
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
 aic = icranks.aicsel
@@ -20,7 +20,7 @@ hqc = icranks.hqcsel
 using Plots, Zygote
 ranks = [1, 1]
 
-res = mecm(matdata, ranks; p, maxiter=10000, etaS=1e-08, ϵ=1e-02)
+res = mecm(matdata, ranks; p, maxiter=300000, etaS=3e-08, ϵ=1e-05)
 filter(!isnan, res.llist)
 plot(filter(!isnan, res.llist))
 

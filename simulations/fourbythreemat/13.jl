@@ -5,11 +5,11 @@ using Plots, DelimitedFiles, Latexify
 
 Random.seed!(20241001)
 
-sims = 1000
+sims = 100
 n = [4, 3]
 ranks = [1, 3]
 
-maxiter = 100
+maxiter = 25
 ϵ = 1e-02
 p = 0
 burnin = 100
@@ -44,19 +44,19 @@ for i in 1:1e08
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 
-# obs = 500
+# obs = 1000
 # genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
 # plot(genmecm.flatdata')
 #
 # estranks = [1, 3]
-# results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
+# results = mecm(genmecm.data, estranks; p=0, maxiter=1000, etaS=2e-08, ϵ=1e-02)
 # results.llist[1:findlast(!isnan, results.llist)]
 # startidx = 1
 # plot(results.llist[startidx:findlast(!isnan, results.llist)])
 # plot(results.fullgrads)
 #
-# results.U3 / results.U3[1]
-# trueU3 / trueU3[1]
+# results.U1 / results.U1[1]
+# trueU1 / trueU1[1]
 #
 # fac1 = fill(NaN, estranks[1], estranks[2], obs)
 # for i in 1:obs
@@ -68,7 +68,7 @@ mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
 ################################################################################
 
 smallobs = 100
-medobs = 250
+medobs = 500
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)
@@ -77,15 +77,18 @@ medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
 folder = "savedsims"
 
-Threads.@threads for s in ProgressBar(1:sims)
-    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
-    aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiter, ϵ)
+for s in ProgressBar(1:sims)
+    mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
+    smalldata = mecmdata.data[:, :, 1:smallobs]
+    # smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
+    aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
-    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
-    aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiter, ϵ)
+    # medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
+    aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
+    # res = mecm(mecmdata.data, [2, 2]; p, maxiter=25, etaS=3e-08, ϵ=1e-03)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
