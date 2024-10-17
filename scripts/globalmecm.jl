@@ -7,7 +7,7 @@ matdata = load(datadir("globaldata.jld2"), "matdata");
 maxiter = 25
 ϵ = 1e-02
 p = 1
-etaS = 3e-08
+etaS = 1e-09
 
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
 aic = icranks.aicsel
