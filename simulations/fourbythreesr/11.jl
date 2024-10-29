@@ -3,7 +3,7 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241029)
+Random.seed!(20241025)
 
 sims = 1000
 n = [4, 3]
@@ -39,7 +39,6 @@ for i in 1:1e08
         trueU4 .= U4
         trueϕ1 .= ϕ1
         trueϕ2 .= ϕ2
-        println("I(1) condition satisfied")
         break
     end
 end
