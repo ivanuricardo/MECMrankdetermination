@@ -52,7 +52,7 @@ medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
 
-for s in ProgressBar(1:sims)
+Threads.@threads for s in ProgressBar(1:sims)
     mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
     smalldata = mecmdata.data[:, :, 1:smallobs]
     aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
@@ -64,6 +64,7 @@ for s in ProgressBar(1:sims)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
+    GC.gc()
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)
