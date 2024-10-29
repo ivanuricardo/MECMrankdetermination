@@ -1,19 +1,18 @@
 using DrWatson
 @quickactivate "MECMrankdetermination"
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
-using Plots, DelimitedFiles, Latexify, Zygote, Distributions
+using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241001)
+Random.seed!(20241029)
 
 sims = 1000
 n = [4, 3]
 ranks = [1, 1]
 
-maxiter = 25
+maxiter = 500
 ϵ = 1e-02
 p = 1
 burnin = 100
-matrixnorm = true
 
 firstsmallic = fill(NaN, 3, sims)
 firstmedic = fill(NaN, 3, sims)
@@ -33,9 +32,7 @@ for i in 1:1e08
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
-    kronU = kron(U2, U1) * kron(U4, U3)'
     if maximum(i1cond) < 0.9
-        # if maximum(i1cond) < 0.9
         trueU1 .= U1
         trueU2 .= U2
         trueU3 .= U3
@@ -48,7 +45,7 @@ for i in 1:1e08
 end
 
 smallobs = 100
-medobs = 1000
+medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)
