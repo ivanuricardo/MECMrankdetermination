@@ -5,7 +5,8 @@ using CairoMakie
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 ranks = [1, 1]
-res = mecm(matdata, ranks; p=1, maxiter=3000, etaS=1e-08, ϵ=1e-02)
+res = mecm(matdata, ranks; p=1, maxiter=200000, etaS=2e-08, ϵ=1e-05)
+plot(filter(!isnan, res.llist))
 
 U4 = res.U4
 U3 = res.U3
@@ -26,6 +27,7 @@ dates = [DateTime(start_year, 1, 1) + Month(3 * (i - 1)) for i in 1:quarters]
 
 # Plot using Makie
 fig = Figure(size=(500, 300))
+# ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value", ylabelvisible=false, xlabelvisible=false)
 ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value")
 
 # Plot the cointegrating relation

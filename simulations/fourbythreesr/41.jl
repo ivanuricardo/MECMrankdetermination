@@ -3,14 +3,14 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241001)
+Random.seed!(20241009)
 
 sims = 1000
 n = [4, 3]
 ranks = [4, 1]
 
-maxiters = 100
-ϵ = 1e-01
+maxiter = 25
+ϵ = 1e-02
 p = 1
 burnin = 100
 matrixnorm = true
@@ -27,12 +27,14 @@ trueU4 = fill(NaN, n[2], ranks[2])
 trueϕ1 = zeros(n[1], n[1])
 trueϕ2 = zeros(n[2], n[2])
 
-for i in 1:1e8
+for i in 1:1e08
 
     U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=true)
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
+    # kronU = kron(U2, U1) * kron(U4, U3)'
+    # if maximum(i1cond) < 0.9 && maximum(abs.(eigvals(kronU))) > 0.5
     if maximum(i1cond) < 0.9
         trueU1 .= U1
         trueU2 .= U2
@@ -45,65 +47,30 @@ for i in 1:1e8
     end
 end
 mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
-
-# obs = 500
-# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
-# plot(genmecm.flatdata')
-
-# estranks = [1, 1]
-# results = mecm(genmecm.data, estranks; p=0, maxiter=100, etaS=1e-04, ϵ=1e-02)
-# results.llist[1:findlast(!isnan, results.llist)]
-# startidx = 1
-# plot(results.llist[startidx:findlast(!isnan, results.llist)])
-# plot(results.fullgrads)
-#
-# results.U3 / results.U3[1:2, 1:2]
-# trueU3 / trueU3[1]
-#
-# fac1 = fill(NaN, estranks[1], estranks[2], obs)
-# for i in 1:obs
-#     fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
-# end
-# plot(tenmat(fac1[], row=[1, 2])')
-# plot(fac1[1, 2, :])
-
-################################################################################
+kronU = kron(trueU2, trueU1) * kron(trueU4, trueU3)'
+maximum(abs.(eigvals(kronU)))
 
 smallobs = 100
-medobs = 500
+medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)
 medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
-folder = "savedsims"
 
-Threads.@threads for s in ProgressBar(1:sims)
-    smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
-    aicsmall, bicsmall, hqcsmall = selectmecm(smallmecm.data; p, maxiters, ϵ)
+for s in ProgressBar(1:sims)
+    mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
+    smalldata = mecmdata.data[:, :, 1:smallobs]
+    aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
-    medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
-    aicmed, bicmed, hqcmed = selectmecm(medmecm.data; p, maxiters=40, ϵ)
+    aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
-
-    smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
-    smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
-    medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
-    medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
-    if !isdir(folder)
-        mkdir(folder)
-    end
-    writedlm(smallaicpath, smallaic, ',')
-    writedlm(smallbicpath, smallbic, ',')
-    writedlm(medaicpath, medaic, ',')
-    writedlm(medbicpath, medbic, ',')
-    GC.gc()
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)
@@ -141,28 +108,4 @@ open(filepath, "w") do file
 end
 
 statmat = results'
-
-println("Average rank for small size (AIC): ", statmat[1, 1:2])
-println("Average rank for small size (BIC): ", statmat[2, 1:2])
-println("Average rank for small size (HQC): ", statmat[3, 1:2])
-
-println("Average rank for medium size (AIC): ", statmat[4, 1:2])
-println("Average rank for medium size (BIC): ", statmat[5, 1:2])
-println("Average rank for medium size (HQC): ", statmat[6, 1:2])
-
-println("Std. Dev rank for small size (AIC): ", statmat[1, 3:4])
-println("Std. Dev rank for small size (BIC): ", statmat[2, 3:4])
-println("Std. Dev rank for small size (HQC): ", statmat[3, 3:4])
-
-println("Std. Dev rank for medium size (AIC): ", statmat[4, 3:4])
-println("Std. Dev rank for medium size (BIC): ", statmat[5, 3:4])
-println("Std. Dev rank for medium size (HQC): ", statmat[6, 3:4])
-
-println("Freq. Correct for small size (AIC): ", statmat[1, 7:8])
-println("Freq. Correct for small size (BIC): ", statmat[2, 7:8])
-println("Freq. Correct for small size (HQC): ", statmat[3, 7:8])
-
-println("Freq. Correct for medium size (AIC): ", statmat[4, 7:8])
-println("Freq. Correct for medium size (BIC): ", statmat[5, 7:8])
-println("Freq. Correct for medium size (HQC): ", statmat[6, 7:8])
 

@@ -5,7 +5,7 @@ using Plots, DelimitedFiles, Latexify
 
 Random.seed!(20241001)
 
-sims = 100
+sims = 1000
 n = [4, 3]
 ranks = [1, 3]
 
@@ -42,70 +42,28 @@ for i in 1:1e08
         break
     end
 end
-mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
-
-# obs = 1000
-# genmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, obs)
-# plot(genmecm.flatdata')
-#
-# estranks = [1, 3]
-# results = mecm(genmecm.data, estranks; p=0, maxiter=1000, etaS=2e-08, ϵ=1e-02)
-# results.llist[1:findlast(!isnan, results.llist)]
-# startidx = 1
-# plot(results.llist[startidx:findlast(!isnan, results.llist)])
-# plot(results.fullgrads)
-#
-# results.U1 / results.U1[1]
-# trueU1 / trueU1[1]
-#
-# fac1 = fill(NaN, estranks[1], estranks[2], obs)
-# for i in 1:obs
-#     fac1[:, :, i] .= results.U3' * genmecm.data[:, :, i] * results.U4
-# end
-# plot(tenmat(fac1, row=[1, 2])')
-# plot(fac1[1, 1, :])
-
-################################################################################
 
 smallobs = 100
-medobs = 500
+medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
 smallhqc = fill(NaN, 2, sims)
 medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
 medhqc = fill(NaN, 2, sims)
-folder = "savedsims"
 
 for s in ProgressBar(1:sims)
     mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
     smalldata = mecmdata.data[:, :, 1:smallobs]
-    # smallmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, smallobs; matrixnorm)
     aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
     smallhqc[:, s] = hqcsmall
 
-    # medmecm = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs; matrixnorm)
     aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
-    # res = mecm(mecmdata.data, [2, 2]; p, maxiter=25, etaS=3e-08, ϵ=1e-03)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
     medhqc[:, s] = hqcmed
-
-    smallaicpath = joinpath(pwd(), folder, "smallaic$s.csv")
-    smallbicpath = joinpath(pwd(), folder, "smallbic$s.csv")
-    medaicpath = joinpath(pwd(), folder, "medaic$s.csv")
-    medbicpath = joinpath(pwd(), folder, "medbic$s.csv")
-    if !isdir(folder)
-        mkdir(folder)
-    end
-    writedlm(smallaicpath, smallaic, ',')
-    writedlm(smallbicpath, smallbic, ',')
-    writedlm(medaicpath, medaic, ',')
-    writedlm(medbicpath, medbic, ',')
-
-    GC.gc()
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)
@@ -143,28 +101,3 @@ open(filepath, "w") do file
 end
 
 statmat = results'
-
-println("Average rank for small size (AIC): ", statmat[1, 1:2])
-println("Average rank for small size (BIC): ", statmat[2, 1:2])
-println("Average rank for small size (HQC): ", statmat[3, 1:2])
-
-println("Average rank for medium size (AIC): ", statmat[4, 1:2])
-println("Average rank for medium size (BIC): ", statmat[5, 1:2])
-println("Average rank for medium size (HQC): ", statmat[6, 1:2])
-
-println("Std. Dev rank for small size (AIC): ", statmat[1, 3:4])
-println("Std. Dev rank for small size (BIC): ", statmat[2, 3:4])
-println("Std. Dev rank for small size (HQC): ", statmat[3, 3:4])
-
-println("Std. Dev rank for medium size (AIC): ", statmat[4, 3:4])
-println("Std. Dev rank for medium size (BIC): ", statmat[5, 3:4])
-println("Std. Dev rank for medium size (HQC): ", statmat[6, 3:4])
-
-println("Freq. Correct for small size (AIC): ", statmat[1, 7:8])
-println("Freq. Correct for small size (BIC): ", statmat[2, 7:8])
-println("Freq. Correct for small size (HQC): ", statmat[3, 7:8])
-
-println("Freq. Correct for medium size (AIC): ", statmat[4, 7:8])
-println("Freq. Correct for medium size (BIC): ", statmat[5, 7:8])
-println("Freq. Correct for medium size (HQC): ", statmat[6, 7:8])
-
