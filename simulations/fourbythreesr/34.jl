@@ -6,8 +6,8 @@ using Plots, DelimitedFiles, Latexify
 Random.seed!(20241025)
 
 sims = 1000
-n = [4, 3]
-ranks = [4, 3]
+n = [3, 4]
+ranks = [3, 4]
 
 maxiter = 500
 ϵ = 1e-02
