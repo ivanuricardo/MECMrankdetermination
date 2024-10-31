@@ -47,50 +47,41 @@ smallobs = 100
 medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
-smallhqc = fill(NaN, 2, sims)
 medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
-medhqc = fill(NaN, 2, sims)
 
-Threads.@threads for s in ProgressBar(1:sims)
+for s in ProgressBar(1:sims)
     mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
     smalldata = mecmdata.data[:, :, 1:smallobs]
     aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
-    smallhqc[:, s] = hqcsmall
 
     aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
-    medhqc[:, s] = hqcmed
-    GC.gc()
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)
 smallbicstats = simstats(smallbic, ranks, sims)
-smallhqcstats = simstats(smallhqc, ranks, sims)
 
 medaicstats = simstats(medaic, ranks, sims)
 medbicstats = simstats(medbic, ranks, sims)
-medhqcstats = simstats(smallhqc, ranks, sims)
 
-avgrank = hcat(smallaicstats.avgrank, smallbicstats.avgrank, smallhqcstats.avgrank,
-    medaicstats.avgrank, medbicstats.avgrank, medhqcstats.avgrank)
+avgrank = hcat(smallaicstats.avgrank, smallbicstats.avgrank,
+    medaicstats.avgrank, medbicstats.avgrank)
 
-stdrank = hcat(smallaicstats.stdrank, smallbicstats.stdrank, smallhqcstats.stdrank,
-    medaicstats.stdrank, medbicstats.stdrank, medhqcstats.stdrank)
+stdrank = hcat(smallaicstats.stdrank, smallbicstats.stdrank,
+    medaicstats.stdrank, medbicstats.stdrank)
 
-lowerrank = hcat(smallaicstats.freqlow, smallbicstats.freqlow, smallhqcstats.freqlow,
-    medaicstats.freqlow, medbicstats.freqlow, medhqcstats.freqlow)
+lowerrank = hcat(smallaicstats.freqlow, smallbicstats.freqlow,
+    medaicstats.freqlow, medbicstats.freqlow)
 
 correctrank = hcat(smallaicstats.freqcorrect, smallbicstats.freqcorrect,
-    smallhqcstats.freqcorrect, medaicstats.freqcorrect,
-    medbicstats.freqcorrect, medhqcstats.freqcorrect)
+    medaicstats.freqcorrect, medbicstats.freqcorrect)
 
 highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
-    smallhqcstats.freqhigh, medaicstats.freqhigh, medbicstats.freqhigh,
-    medhqcstats.freqhigh)
+    medaicstats.freqhigh, medbicstats.freqhigh)
 
 results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
 
@@ -102,3 +93,4 @@ open(filepath, "w") do file
 end
 
 statmat = results'
+
