@@ -3,13 +3,13 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241025)
+Random.seed!(20241024)
 
 sims = 1000
 n = [3, 4]
 ranks = [1, 4]
 
-maxiter = 500
+maxiter = 100
 ϵ = 1e-02
 p = 0
 burnin = 100
@@ -40,6 +40,8 @@ for i in 1:1e08
         break
     end
 end
+mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
+abs.(eigvals(kron(trueU2, trueU1) * kron(trueU4, trueU3)'))
 
 smallobs = 100
 medobs = 250

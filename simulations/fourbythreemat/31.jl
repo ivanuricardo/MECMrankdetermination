@@ -3,13 +3,13 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241025)
+Random.seed!(20241030)
 
 sims = 1000
 n = [3, 4]
 ranks = [3, 1]
 
-maxiter = 500
+maxiter = 75
 ϵ = 1e-02
 p = 0
 burnin = 100

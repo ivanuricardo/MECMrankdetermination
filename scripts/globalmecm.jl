@@ -20,10 +20,9 @@ hqc = icranks.hqcsel
 using Plots, Zygote
 ranks = [1, 1]
 
-res = mecm(matdata, ranks; p, maxiter=200000, etaS=1e-09, ϵ=1e-04)
+res = mecm(matdata, ranks; p, maxiter=300000, etaS=1e-09, ϵ=1e-04)
 filter(!isnan, res.llist)
-plot(filter(!isnan, res.llist[102000:115000]))
-plot(res.fullgrads[102000:115000, :])
+plot(filter(!isnan, res.llist))
 
 D = latexify(round.(res.D, digits=3))
 
