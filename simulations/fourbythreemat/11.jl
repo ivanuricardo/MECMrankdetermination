@@ -84,7 +84,7 @@ highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
 results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
 
 latexmatrix = latexify(round.(results', digits=2))
-filepath = "final.txt"
+filepath = "final1.txt"
 # Write the matrix to a file with a custom delimiter
 open(filepath, "w") do file
     write(file, latexmatrix)
