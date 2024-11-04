@@ -3,42 +3,50 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241025)
+for i in 1:100000
+    Random.seed!(20241100 + i)
+    println(20241100 + i)
 
-sims = 1000
-n = [3, 4]
-ranks = [1, 1]
+    sims = 1000
+    n = [3, 4]
+    ranks = [3, 1]
 
-maxiter = 500
-ϵ = 1e-02
-p = 1
-burnin = 100
+    maxiter = 500
+    ϵ = 1e-02
+    p = 0
+    burnin = 100
 
-firstsmallic = fill(NaN, 3, sims)
-firstmedic = fill(NaN, 3, sims)
-secondsmallic = fill(NaN, 3, sims)
-secondmedic = fill(NaN, 3, sims)
+    firstsmallic = fill(NaN, 3, sims)
+    firstmedic = fill(NaN, 3, sims)
+    secondsmallic = fill(NaN, 3, sims)
+    secondmedic = fill(NaN, 3, sims)
 
-trueU1 = fill(NaN, n[1], ranks[1])
-trueU2 = fill(NaN, n[2], ranks[2])
-trueU3 = fill(NaN, n[1], ranks[1])
-trueU4 = fill(NaN, n[2], ranks[2])
-trueϕ1 = zeros(n[1], n[1])
-trueϕ2 = zeros(n[2], n[2])
+    trueU1 = fill(NaN, n[1], ranks[1])
+    trueU2 = fill(NaN, n[2], ranks[2])
+    trueU3 = fill(NaN, n[1], ranks[1])
+    trueU4 = fill(NaN, n[2], ranks[2])
+    trueϕ1 = zeros(n[1], n[1])
+    trueϕ2 = zeros(n[2], n[2])
 
-for i in 1:1e08
+    for i in 1:1e08
 
-    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=true)
+        U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false)
 
-    # Check I(1)
-    i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
-    if maximum(i1cond) < 0.9
-        trueU1 .= U1
-        trueU2 .= U2
-        trueU3 .= U3
-        trueU4 .= U4
-        trueϕ1 .= ϕ1
-        trueϕ2 .= ϕ2
+        # Check I(1)
+        i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
+        if maximum(i1cond) < 1.0
+            trueU1 .= U1
+            trueU2 .= U2
+            trueU3 .= U3
+            trueU4 .= U4
+            break
+        end
+    end
+    tmp = mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
+    t2 = abs.(eigvals(kron(trueU2, trueU1) * kron(trueU4, trueU3)'))
+    if tmp[end-1] > 0.15 && tmp[end-2] > 0.15 && t2[1] > 0.80
+        # if t2[1] > 0.8
+        println("I(1) condition satisfied")
         break
     end
 end

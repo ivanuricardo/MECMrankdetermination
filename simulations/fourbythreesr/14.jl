@@ -42,6 +42,8 @@ for i in 1:1e08
         break
     end
 end
+tmp = mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
+t2 = abs.(eigvals(kron(trueU2, trueU1) * kron(trueU4, trueU3)'))
 
 smallobs = 100
 medobs = 250
