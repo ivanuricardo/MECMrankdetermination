@@ -3,7 +3,7 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241025)
+Random.seed!(20241102)
 
 sims = 1000
 n = [3, 4]
