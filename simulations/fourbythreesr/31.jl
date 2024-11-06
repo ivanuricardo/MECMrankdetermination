@@ -3,7 +3,7 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241106)
+Random.seed!(20241104)
 
 sims = 1000
 n = [3, 4]
@@ -28,7 +28,7 @@ trueϕ2 = zeros(n[2], n[2])
 
 for i in 1:1e08
 
-    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=true, scale=4)
+    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=true, scale=1.5)
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
@@ -47,10 +47,8 @@ smallobs = 100
 medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
-smallhqc = fill(NaN, 2, sims)
 medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
-medhqc = fill(NaN, 2, sims)
 
 for s in ProgressBar(1:sims)
     mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
@@ -58,12 +56,10 @@ for s in ProgressBar(1:sims)
     aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
-    smallhqc[:, s] = hqcsmall
 
     aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
-    medhqc[:, s] = hqcmed
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)

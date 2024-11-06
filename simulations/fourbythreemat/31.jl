@@ -3,7 +3,7 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241107)
+Random.seed!(20241102)
 
 sims = 1000
 n = [3, 4]
@@ -28,7 +28,7 @@ trueϕ2 = zeros(n[2], n[2])
 
 for i in 1:1e08
 
-    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false, scale=4)
+    U1, U2, U3, U4, ϕ1, ϕ2 = generatemecmparams(n, ranks, genphi=false, scale=2)
 
     # Check I(1)
     i1cond = mecmstable(U1, U2, U3, U4, ϕ1, ϕ2)
