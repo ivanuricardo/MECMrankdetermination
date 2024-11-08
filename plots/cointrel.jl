@@ -26,9 +26,9 @@ quarters = 4 * (end_year - start_year + 1)
 dates = [DateTime(start_year, 1, 1) + Month(3 * (i - 1)) for i in 1:quarters]
 
 # Plot using Makie
-fig = Figure(size=(500, 300))
+fig = Figure(size=(900, 400));
 # ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value", ylabelvisible=false, xlabelvisible=false)
-ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value")
+ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value", titlesize=24, labelsize=18)
 
 # Plot the cointegrating relation
 lines!(ax, dates[1:obs], vec(cointrelation))
@@ -36,7 +36,7 @@ lines!(ax, dates[1:obs], vec(cointrelation))
 # Format x-axis to show years with quarters
 xticks = [DateTime(y, 1, 1) for y in start_year:2:end_year]
 ax.xticks = (xticks, string.(year.(xticks)))
-fig[2, :] = Legend(fig, ax; orientation=:horizontal, halign=:center, valign=:bottom, framevisible=false, labelsize=20)
+# fig[2, :] = Legend(fig, ax; orientation=:horizontal, halign=:center, valign=:bottom, framevisible=false, labelsize=20)
 
 # Display the plot
 fig
