@@ -47,10 +47,8 @@ smallobs = 100
 medobs = 250
 smallaic = fill(NaN, 2, sims)
 smallbic = fill(NaN, 2, sims)
-smallhqc = fill(NaN, 2, sims)
 medaic = fill(NaN, 2, sims)
 medbic = fill(NaN, 2, sims)
-medhqc = fill(NaN, 2, sims)
 
 for s in ProgressBar(1:sims)
     mecmdata = generatemecmdata(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2, medobs)
@@ -58,12 +56,10 @@ for s in ProgressBar(1:sims)
     aicsmall, bicsmall, hqcsmall = selectmecm(smalldata; p, maxiter, ϵ)
     smallaic[:, s] = aicsmall
     smallbic[:, s] = bicsmall
-    smallhqc[:, s] = hqcsmall
 
     aicmed, bicmed, hqcmed = selectmecm(mecmdata.data; p, maxiter, ϵ)
     medaic[:, s] = aicmed
     medbic[:, s] = bicmed
-    medhqc[:, s] = hqcmed
 end
 
 smallaicstats = simstats(smallaic, ranks, sims)
@@ -90,7 +86,7 @@ highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
 results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
 
 latexmatrix = latexify(round.(results', digits=2))
-filepath = "final.txt"
+filepath = "34shortrunresults.txt"
 # Write the matrix to a file with a custom delimiter
 open(filepath, "w") do file
     write(file, latexmatrix)
