@@ -3,7 +3,7 @@ using DrWatson
 using TensorToolbox, Statistics, Random, LinearAlgebra, CommonFeatures, ProgressBars
 using Plots, DelimitedFiles, Latexify
 
-Random.seed!(20241010)
+Random.seed!(20241102)
 
 sims = 1000
 n = [3, 4]
@@ -84,7 +84,7 @@ highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
 results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
 
 latexmatrix = latexify(round.(results', digits=2))
-filepath = "final4.txt"
+filepath = "34results.txt"
 # Write the matrix to a file with a custom delimiter
 open(filepath, "w") do file
     write(file, latexmatrix)

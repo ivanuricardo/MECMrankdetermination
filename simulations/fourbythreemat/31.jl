@@ -40,8 +40,6 @@ for i in 1:1e08
         break
     end
 end
-mecmstable(trueU1, trueU2, trueU3, trueU4, trueϕ1, trueϕ2)
-abs.(eigvals(kron(trueU2, trueU1) * kron(trueU4, trueU3)'))
 
 smallobs = 100
 medobs = 250
@@ -86,7 +84,7 @@ highrank = hcat(smallaicstats.freqhigh, smallbicstats.freqhigh,
 results = vcat(avgrank, stdrank, lowerrank, correctrank, highrank)
 
 latexmatrix = latexify(round.(results', digits=2))
-filepath = "final3.txt"
+filepath = "31results.txt"
 # Write the matrix to a file with a custom delimiter
 open(filepath, "w") do file
     write(file, latexmatrix)
