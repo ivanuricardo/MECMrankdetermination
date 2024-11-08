@@ -50,11 +50,3 @@ for i in 1:obs
 end
 plot(tenmat(facmat, row=[1, 2])')
 
-pi = kron(U2, U1) * kron(U4, U3)'
-phi = kron(res.ϕ2, res.ϕ1)
-vecdata = tenmat(matdata, row=[1, 2])'
-contempvec = vecdata[3:end, :]
-laggedvec = vecdata[2:(end-1), :]
-diffvec = vecdata[2:(end-1), :] - vecdata[1:(end-2), :]
-residuals = contempvec - laggedvec * pi - diffvec * phi
-plot(residuals[:, 10])

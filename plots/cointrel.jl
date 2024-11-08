@@ -5,7 +5,7 @@ using CairoMakie
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 ranks = [1, 1]
-res = mecm(matdata, ranks; p=1, maxiter=200000, etaS=2e-08, ϵ=1e-05)
+res = mecm(matdata, ranks; p=1, maxiter=300000, etaS=1e-08, ϵ=1e-04)
 plot(filter(!isnan, res.llist))
 
 U4 = res.U4
@@ -31,7 +31,7 @@ fig = Figure(size=(500, 300))
 ax = Axis(fig[1, 1], title="Cointegrating Relation", xlabel="Date", ylabel="Value")
 
 # Plot the cointegrating relation
-lines!(ax, dates[1:obs], vec(cointrelation), label="Y1")
+lines!(ax, dates[1:obs], vec(cointrelation))
 
 # Format x-axis to show years with quarters
 xticks = [DateTime(y, 1, 1) for y in start_year:2:end_year]
