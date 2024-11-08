@@ -1,6 +1,6 @@
 using DrWatson
 @quickactivate "MECMrankdetermination"
-using TensorToolbox, CommonFeatures, LinearAlgebra, Statistics, Latexify
+using CommonFeatures, Latexify
 
 matdata = load(datadir("globaldata.jld2"), "matdata");
 
@@ -12,41 +12,29 @@ etaS = 1e-10
 icranks = selectmecm(matdata; p, maxiter, ϵ, etaS)
 aic = icranks.aicsel
 bic = icranks.bicsel
-hqc = icranks.hqcsel
 @info "AIC selects ranks $aic"
 @info "BIC selects ranks $bic"
-@info "HQC selects ranks $hqc"
 
-using Plots, Zygote
 ranks = [1, 1]
-
 res = mecm(matdata, ranks; p, maxiter=300000, etaS=1e-08, ϵ=1e-04)
-filter(!isnan, res.llist)
-plot(filter(!isnan, res.llist))
 
 D = latexify(round.(res.D, digits=3))
-
 Σ1 = latexify(round.(res.Σ1, digits=3))
 Σ2 = latexify(round.(res.Σ2, digits=3))
-
 ϕ1 = latexify(round.(res.ϕ1, digits=3))
 ϕ2 = latexify(round.(res.ϕ2, digits=3))
+U1 = latexify(round.(res.U1, digits=3))
+U2 = latexify(round.(res.U2, digits=3))
+U3 = latexify(round.(res.U3, digits=3))
+U4 = latexify(round.(res.U4, digits=3))
 
-kron(res.Σ2, res.Σ1)
-kron(res.ϕ2, res.ϕ1)
+println("Estimated D: \n$D")
+println("\nEstimated Σ1: \n$Σ1")
+println("\nEstimated Σ2: \n$Σ2")
+println("\nEstimated ϕ1: \n$ϕ1")
+println("\nEstimated ϕ2: \n$ϕ2")
 
-U1 = res.U1
-U2 = res.U2
-kron(U2, U1)
-
-U3 = res.U3
-U4 = res.U4
-kron(U4, U3)
-
-obs = size(matdata, 3)
-facmat = fill(NaN, ranks[1], ranks[2], obs)
-for i in 1:obs
-    facmat[:, :, i] .= U3' * matdata[:, :, i] * U4
-end
-plot(tenmat(facmat, row=[1, 2])')
-
+println("\nEstimated U1: \n", round.(res.U1, digits=3))
+println("\nEstimated U2: \n", round.(res.U2, digits=3))
+println("\nEstimated U3: \n", round.(res.U3, digits=3))
+println("\nEstimated U4: \n", round.(res.U4, digits=3))
